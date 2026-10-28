@@ -1,0 +1,29 @@
+# Render-Blueprint: legt den Web-Service automatisch an (Render → New → Blueprint).
+# Geheime Werte (MONGODB_URI, PUBLIC_ORIGIN, ADMIN_PASSWORD_HASH) fragt Render beim Anlegen ab; sie stehen nie im Repo.
+services:
+  - type: web
+    name: derpole
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: MONGODB_URI
+        sync: false
+      - key: PUBLIC_ORIGIN
+        sync: false
+      # Erstes Admin-Konto: wird beim Start angelegt, solange es noch keinen Admin gibt
+      - key: ADMIN_USERNAME
+        value: Admin
+      - key: ADMIN_PASSWORD_HASH
+        sync: false

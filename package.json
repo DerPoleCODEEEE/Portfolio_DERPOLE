@@ -1,0 +1,22 @@
+{
+  "name": "derpole-portfolio",
+  "version": "1.0.0",
+  "description": "DerPole portfolio, client portal and Discord order tracking",
+  "private": true,
+  "main": "server.js",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "create-admin": "node scripts/create-user.js --admin",
+    "create-user": "node scripts/create-user.js",
+    "selftest": "node scripts/selftest.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.27.0",
+    "express": "^4.22.3",
+    "mongodb": "^6.21.0",
+    "multer": "^2.5.0"
+  }
+}
