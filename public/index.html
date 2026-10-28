@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DerPole · Schachvideos &amp; Twitch-Grafiken</title>
+  <meta name="description" content="DerPole schneidet Schachvideos, zeichnet Emotes und Badges für Twitch und programmiert Schach-Spiele für Streams.">
+  <meta name="theme-color" content="#fffaf0">
+  <meta property="og:title" content="DerPole · Schachvideos & Twitch-Grafiken">
+  <meta property="og:description" content="Schachvideos, Emotes, Badges und Schach-Spiele für Streams.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <!-- Schriften: Bricolage Grotesque + JetBrains Mono. Für DSGVO-konformes Hosting lokal ablegen. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400..600&display=swap">
+
+  <!-- styles.css = Bausteine, arcade.css = Look der Startseite -->
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="arcade.css">
+  <script src="boot.js"></script>
+  <script defer src="main.js"></script>
+</head>
+<body class="arcade">
+  <!-- ============ ICONS (Sprite) ============ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- Schach -->
+      <symbol id="i-knight" viewBox="0 0 24 24"><path d="M6.5 20.4h11M9 18c-.2-2.4.9-4.1 3-5.6-1.4.3-2.6 0-3.6-.9l-1.9 1.1-1.5-1.6 3.2-3.2c.5-1.9 1.9-3.2 3.8-3.6l1-1.4 1 1.7c2.6.9 4.2 3.6 4.2 7.4V18M14.6 6.8c.9.9 1.4 2.3 1.4 4"/><path d="M11.4 7.9h.01" stroke-width="2.4"/></symbol>
+      <symbol id="i-pawn" viewBox="0 0 24 24"><circle cx="12" cy="6.6" r="2.4"/><path d="M9.6 10.5h4.8M10.6 10.5c0 2.6-.9 4.8-2.6 6.6h8c-1.7-1.8-2.6-4-2.6-6.6M7 20.3c.2-1.6.9-2.7 1.6-3.2h6.8c.7.5 1.4 1.6 1.6 3.2z"/></symbol>
+      <symbol id="i-rook" viewBox="0 0 24 24"><path d="M7 20.3c.2-1.5.8-2.6 1.5-3.1h7c.7.5 1.3 1.6 1.5 3.1zM8.8 17.2l.6-6.7h5.2l.6 6.7M7.6 10.5h8.8M8 10.5V5h2v1.8h1.2V5h1.6v1.8H14V5h2v5.5"/></symbol>
+      <symbol id="i-king" viewBox="0 0 24 24"><path d="M12 2.8v3.4M10.4 4.4h3.2M7 20.3c.2-1.5.8-2.6 1.5-3.1h7c.7.5 1.3 1.6 1.5 3.1zM9.2 17.2c-.4-2.6-2.4-3.8-2.4-6 0-1.9 1.6-3.2 3.4-3.2.8 0 1.4.3 1.8.8.4-.5 1-.8 1.8-.8 1.8 0 3.4 1.3 3.4 3.2 0 2.2-2 3.4-2.4 6"/></symbol>
+      <symbol id="i-queen" viewBox="0 0 24 24"><path d="M7 20.3c.2-1.5.8-2.6 1.5-3.1h7c.7.5 1.3 1.6 1.5 3.1zM8.6 17.2 6.3 9.6l3.4 2.6L12 7.6l2.3 4.6 3.4-2.6-2.3 7.6"/><circle cx="6.2" cy="8.1" r="1.1"/><circle cx="12" cy="5.6" r="1.1"/><circle cx="17.8" cy="8.1" r="1.1"/></symbol>
+      <symbol id="i-board" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><path fill="currentColor" stroke="none" opacity=".45" d="M4 4h4v4H4zM12 4h4v4h-4zM8 8h4v4H8zM16 8h4v4h-4zM4 12h4v4H4zM12 12h4v4h-4zM8 16h4v4H8zM16 16h4v4h-4z"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="10.5" rx="2"/><circle cx="8.5" cy="14.2" r="2.6"/><circle cx="15.5" cy="14.2" r="2.6"/><path d="M8.5 14.2v-1.4M15.5 14.2l1-1M7 9V7h3M14 9V6.2h3"/></symbol>
+      <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2.5V18h15.5M2.5 6H18v15.5"/></symbol>
+      <symbol id="i-move" viewBox="0 0 24 24"><path d="M5 19c3-6 7-10 13.5-13.5M13.5 5h5.5v5.5"/></symbol>
+      <symbol id="i-eval" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="18" rx="1.5"/><path fill="currentColor" stroke="none" d="M9 12.5h6v7a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 19.5z"/><path d="M5 12.5h2M17 12.5h2"/></symbol>
+      <!-- Leistungen -->
+      <symbol id="i-play" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z"/></symbol>
+      <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6.5" r="2.5"/><circle cx="6" cy="17.5" r="2.5"/><path d="M8.2 7.8 20 17M8.2 16.2 20 7"/></symbol>
+      <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.2c1 1.3 2.2 1.9 3.5 1.9s2.5-.6 3.5-1.9M9 9.5v1.2M15 9.5v1.2"/></symbol>
+      <symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.5"/><path d="M9 13.6 7.6 21l4.4-2.4 4.4 2.4-1.4-7.4M12 6.6l.8 1.6 1.7.2-1.2 1.2.3 1.7-1.6-.8-1.6.8.3-1.7-1.2-1.2 1.7-.2z"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5 3 8l9 4.5L21 8zM3 12l9 4.5 9-4.5M3 16l9 4.5 9-4.5"/></symbol>
+      <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M6.5 7.5h5M6.5 16.5h7"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="m21 15.5-4.8-4.8L7.5 19"/></symbol>
+      <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10.5 10.3a2 2 0 1 0 0 3.4M17 10.3a2 2 0 1 0 0 3.4"/></symbol>
+      <symbol id="i-hash" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14M10.5 4 8.5 20M15.5 4l-2 16"/></symbol>
+      <symbol id="i-script" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM15 3v4h4M9 11.5h7M9 15h7M9 18.5h4"/></symbol>
+      <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-1.3-1-1.6-1-2.6 0-.9.7-1.5 1.7-1.5H17a4 4 0 0 0 4-4C21 6.7 17 3 12 3z"/><circle cx="7.5" cy="11.5" r="1"/><circle cx="9.5" cy="7.5" r="1"/><circle cx="14" cy="7" r="1"/><circle cx="17" cy="10.5" r="1"/></symbol>
+      <!-- Daten & Ablauf -->
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
+      <symbol id="i-trend" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8M15 7h6v6"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.6 12 20 12 20z"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.6a3.5 3.5 0 0 1 0 6.8M21 20c0-2.6-1.6-4.8-4-5.6"/></symbol>
+      <symbol id="i-message" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M3 5h11v8H7.5L3 16.5zM10 16h4.5L19 19.5V11h-2"/></symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m4 20 1-4L16 5l3 3L8 19zM14 7l3 3"/></symbol>
+      <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5l9 4.5 9-4.5M12 12v9"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+      <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6l-1 7.5 8-10.5h-6z"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <!-- Gefüllte Figuren für die Editor-Demo -->
+      <symbol id="p-p" viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3.2"/><path d="M9.2 11.4h5.6l1.4 6.6H7.8z"/><rect x="6.5" y="18" width="11" height="2.6" rx="1"/></symbol>
+      <symbol id="p-r" viewBox="0 0 24 24"><path d="M7 4h2.2v2h1.6V4h2.4v2h1.6V4H17v4.5l-1.5 1.5.8 8H7.7l.8-8L7 8.5z"/><rect x="6" y="18" width="12" height="2.6" rx="1"/></symbol>
+      <symbol id="p-n" viewBox="0 0 24 24"><path d="M8 18c0-3 1.3-4.6 3.3-6-1.6.4-3 .1-4-1L6 9.6l3.6-4.4c.8-1.5 2.2-2.4 3.9-2.6l.8-1.3 1 1.6c2.2 1 3.7 3.6 3.7 7V18z"/><rect x="6" y="18" width="12" height="2.6" rx="1"/></symbol>
+      <symbol id="p-b" viewBox="0 0 24 24"><circle cx="12" cy="4.2" r="1.4"/><path d="M12 5.6c2.6 1.6 3.8 3.6 3.8 5.6 0 1.6-.9 2.8-2 3.4l.7 3.4H9.5l.7-3.4c-1.1-.6-2-1.8-2-3.4 0-2 1.2-4 3.8-5.6z"/><rect x="6.5" y="18" width="11" height="2.6" rx="1"/></symbol>
+      <symbol id="p-q" viewBox="0 0 24 24"><path d="M5 7.5l2.6 8.3h8.8L19 7.5l-3.7 3.2L12 4.5l-3.3 6.2z"/><rect x="7" y="15.6" width="10" height="2.4" rx=".8"/><rect x="6" y="18" width="12" height="2.6" rx="1"/></symbol>
+      <symbol id="p-k" viewBox="0 0 24 24"><path d="M11.2 2.5h1.6v2h2v1.6h-2v1.7c2.6.4 4.2 2.1 4.2 4.2 0 1.8-1.2 3.4-2.4 4.2l.4 1.8H9l.4-1.8C8.2 15.4 7 13.8 7 12c0-2.1 1.6-3.8 4.2-4.2V6.1h-2V4.5h2z"/><rect x="6" y="18" width="12" height="2.6" rx="1"/></symbol>
+      <!-- Facecam-Motiv -->
+      <linearGradient id="ed-room" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#302c38"/><stop offset="1" stop-color="#1b1a20"/></linearGradient>
+      <symbol id="ed-person" viewBox="0 0 160 90">
+        <rect width="160" height="90" fill="url(#ed-room)"/>
+        <circle cx="28" cy="26" r="14" fill="#b8a2e6" opacity=".14"/>
+        <rect x="110" y="18" width="38" height="3" rx="1.5" fill="#403b48"/>
+        <rect x="115" y="8" width="5" height="10" rx="1" fill="#e2b46a" opacity=".6"/>
+        <rect x="122" y="11" width="4" height="7" rx="1" fill="#8fb4e3" opacity=".55"/>
+        <rect x="128" y="7" width="5" height="11" rx="1" fill="#e3998b" opacity=".55"/>
+        <path d="M42 90c3-19 18-29 38-29s35 10 38 29z" fill="#3d4b45"/>
+        <circle cx="80" cy="41" r="15" fill="#d6b49c"/>
+        <path d="M65 39c0-10 7-16 15-16s15 6 15 16c-3-5-8-8-15-8s-12 3-15 8z" fill="#3b2c26"/>
+        <path d="M63 43a17 17 0 0 1 34 0" fill="none" stroke="#17191a" stroke-width="3"/>
+        <rect x="60" y="39" width="6" height="11" rx="3" fill="#17191a"/><rect x="94" y="39" width="6" height="11" rx="3" fill="#17191a"/>
+      </symbol>
+      <!-- Code -->
+      <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 4.5l-3 15"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.5 3.7 5.6 3.7 9s-1.3 6.5-3.7 9c-2.4-2.5-3.7-5.6-3.7-9S9.6 5.5 12 3z"/></symbol>
+      <symbol id="i-tool" viewBox="0 0 24 24"><path d="M15.5 3.5a5 5 0 0 0-4.8 6.6L3.5 17.3V20.5h3.2l7.2-7.2a5 5 0 0 0 6.6-4.8l-3 3-3.3-.8-.8-3.3z"/></symbol>
+      <!-- Plattformen -->
+      <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3-3.46M14 3c.4 2.6 2.2 4.4 5 4.7"/></symbol>
+      <symbol id="i-youtube" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10.2 9.4v5.2l4.4-2.6z"/></symbol>
+      <symbol id="i-twitch" viewBox="0 0 24 24"><path d="M5 3 3.5 7v12h4.5v2.5h2.5L13 19h4l4-4V3zM19 14l-2.5 2.5H12l-2.5 2.5v-2.5H6V5h13zM11 8v4.5M15.5 8v4.5"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="progress" aria-hidden="true"></div>
+  <a class="skip" href="#main" data-i18n="a11y.skip">Zum Inhalt springen</a>
+
+  <!-- ============ NAVIGATION ============ -->
+  <header class="nav" data-nav>
+    <div class="nav__inner">
+      <a href="#top" class="logo" aria-label="DerPole">
+        <span class="logo__mark" aria-hidden="true"><svg class="i"><use href="#i-knight"/></svg></span>
+        <span class="logo__text">DerPole</span>
+      </a>
+      <nav class="nav__links" id="nav-links" aria-label="Hauptnavigation">
+        <a href="#editor" data-i18n="nav.editor">Editor</a>
+        <a href="#leistungen" data-i18n="nav.services">Leistungen</a>
+        <a href="#showcase" data-i18n="nav.showcase">Arbeiten</a>
+        <a href="#pakete" data-i18n="nav.pricing">Pakete</a>
+        <a href="#faq" data-i18n="nav.faq">FAQ</a>
+      </nav>
+      <div class="nav__actions">
+        <div class="lang" role="group" aria-label="Sprache / Language">
+          <button type="button" class="lang__btn" data-lang="de" aria-pressed="true">DE</button>
+          <button type="button" class="lang__btn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <a href="/login" class="nav__login" data-i18n="nav.login">Login</a>
+        <a href="#kontakt" class="btn btn--accent btn--sm nav__cta" data-i18n="nav.cta">Schreib mir</a>
+        <button class="nav__burger" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menü" data-i18n-attr="aria-label:nav.menu"><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+
+    <!-- ============ START ============ -->
+    <section class="hero" id="top">
+      <div class="tile hero__intro">
+        <p class="status" data-reveal><span class="status__dot" aria-hidden="true"></span><span data-i18n="hero.kicker">Gerade frei für neue Aufträge</span></p>
+        <h1 class="hero__title" data-split data-i18n="hero.title">Hi, ich bin <mark>DerPole</mark>.</h1>
+        <p class="hero__lead" data-reveal data-i18n="hero.lead">Ich schneide Schachvideos, zeichne Emotes und Badges für Twitch und programmiere Schach-Spiele für Streams.</p>
+        <div class="hero__ctas" data-reveal>
+          <a href="#kontakt" class="btn btn--accent btn--lg"><span data-i18n="hero.cta1">Schreib mir</span><svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a href="#showcase" class="btn btn--lg" data-i18n="hero.cta2">Arbeiten ansehen</a>
+        </div>
+      </div>
+      <div class="tile hero__wall" data-reveal>
+        <div class="wall" aria-hidden="true">
+          <img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_9ae8988c80224fdbb2d59eaee4c35f18/default/dark/3.0" alt="">
+          <img src="https://static-cdn.jtvnw.net/badges/v1/69049e20-86a2-4b48-b629-ca0f198a0155/3" alt="">
+          <img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_44c18822bb024ee9af1cf5ad7a2e9d23/default/dark/3.0" alt="">
+          <img src="https://static-cdn.jtvnw.net/badges/v1/2e0d7d16-6b4b-41fd-85d6-378eb152e38a/3" alt="">
+          <img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_7b73900d45894fe0aa4efc3d680a92f3/default/dark/3.0" alt="">
+          <img src="https://static-cdn.jtvnw.net/badges/v1/80fd2271-8d9d-469e-af7d-e6a3e78acd83/3" alt="">
+          <img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_6eff759ea82740e493c5f063f6237b36/default/dark/3.0" alt="">
+          <img src="https://static-cdn.jtvnw.net/badges/v1/8c945fda-70ed-4729-be0c-b2485144324d/3" alt="">
+          <img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_e0a1b18555e6422c85cb068803347a16/default/dark/3.0" alt="">
+        </div>
+        <p class="wall__cap" data-i18n="hero.wall">Emotes und Badges für TheCager</p>
+      </div>
+    </section>
+
+    <!-- ============ EDITOR ============ -->
+    <section class="sec" id="editor">
+      <div class="tile tile--sky editor">
+        <div class="editor__text" data-reveal>
+          <p class="eyebrow"><span data-i18n="editor.eyebrow">Editor</span></p>
+          <h2 class="sec__title" data-i18n="editor.title">Mein Schach-Editor</h2>
+          <p data-i18n="editor.text">Den hab ich selbst geschrieben. Im Stream-Clip markiere ich Facecam und Brett, daraus wird ein Hochformat-Video. Der Editor kennt jedes Feld, deshalb sitzen Pfeile und Markierungen genau. PGN-Dateien kann er auch.</p>
+        </div>
+          <div class="editor-mock" data-reveal role="img" aria-label="Demo: Facecam und Brett werden aus einem Stream-Clip ausgewählt und als Hochformat-Short angeordnet" data-i18n-attr="aria-label:editor.mockLabel">
+            <div class="editor-mock__bar">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="editor-mock__file">derpole-editor · stream-clip_0412.mp4</span>
+              <span class="editor-mock__status"><i></i><span data-ed-status>SELECT</span></span>
+            </div>
+
+            <div class="ed-stage" data-ed aria-hidden="true">
+              <!-- Quelle: Stream-Clip im Querformat -->
+              <div class="ed-src">
+                <div class="ed-board ed-src__board" data-ed-board></div>
+                <div class="ed-cam ed-src__cam" data-ed-cam>
+                  <svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice"><use href="#ed-person"/></svg>
+                  <span class="ed-live">LIVE</span>
+                </div>
+                <div class="ed-chat ed-src__chat">
+                  <i style="--n:#e3998b;--w:70%"></i><i style="--n:#8fb4e3;--w:45%"></i><i style="--n:#e2b46a;--w:82%"></i>
+                  <i style="--n:#b8a2e6;--w:38%"></i><i style="--n:#8dbf9f;--w:64%"></i><i style="--n:#e3998b;--w:52%"></i>
+                </div>
+              </div>
+
+              <!-- Auswahlrahmen, die einrasten -->
+              <div class="ed-sel ed-sel--cam" data-ed-sel="cam"><span class="ed-sel__tag">Facecam ✓</span></div>
+              <div class="ed-sel ed-sel--board" data-ed-sel="board"><span class="ed-sel__tag" data-i18n="editor.board">Brett ✓</span></div>
+
+              <!-- Ergebnis: Hochformat + Effekte -->
+              <div class="ed-out">
+                <div class="ed-phone">
+                  <div class="ed-cam ed-phone__cam"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice"><use href="#ed-person"/></svg></div>
+                  <div class="ed-board ed-phone__board" data-ed-board data-ed-out>
+                    <div class="ed-grid" data-ed-grid></div>
+                    <div class="ed-hl"></div>
+                    <svg class="ed-arrow" viewBox="0 0 8 8"><path class="ed-arrow__line" d="M2.5 4.5 5.04 1.96" pathLength="1"/><path class="ed-arrow__head" d="M5.39 1.61 5.21 2.14 4.86 1.78z"/></svg>
+                    <span class="ed-badge">!!</span>
+                  </div>
+                  <!-- Nach dem Upload: Zähler wie in der TikTok-/Shorts-App -->
+                  <div class="ed-post">
+                    <div class="ed-post__side">
+                      <span class="ed-stat"><svg class="i"><use href="#i-heart"/></svg><b data-ed-count="6100">0</b></span>
+                      <span class="ed-stat"><svg class="i"><use href="#i-chat"/></svg><b data-ed-count="312">0</b></span>
+                      <span class="ed-stat"><svg class="i"><use href="#i-eye"/></svg><b data-ed-count="48200">0</b></span>
+                    </div>
+                    <div class="ed-hearts"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                  </div>
+                </div>
+                <div class="ed-panel">
+                  <p class="ed-panel__label" data-i18n="editor.fx">Effekte</p>
+                  <p class="ed-panel__status"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="editor.squares">64/64 Felder erkannt</span></p>
+                  <div class="ed-chips">
+                    <span class="ed-chip" data-ed-chip="hl" style="--c:var(--amber)"><svg class="i"><use href="#i-board"/></svg><span data-i18n="editor.c1">Feld</span></span>
+                    <span class="ed-chip" data-ed-chip="arrow" style="--c:var(--sky)"><svg class="i"><use href="#i-move"/></svg><span data-i18n="editor.c2">Pfeil</span></span>
+                    <span class="ed-chip" data-ed-chip="badge" style="--c:var(--sage)"><svg class="i"><use href="#i-sparkle"/></svg><span>!!</span></span>
+                    <span class="ed-chip" style="--c:var(--lilac)"><svg class="i"><use href="#i-eye"/></svg><span>Zoom</span></span>
+                  </div>
+                  <span class="ed-export" data-ed-export><svg class="i"><use href="#i-arrow"/></svg>Export 9:16</span>
+                </div>
+              </div>
+
+              <span class="ed-toast"><svg class="i"><use href="#i-check"/></svg>1080 × 1920 · TikTok / Shorts</span>
+              <span class="ed-viral">
+                <span class="ed-viral__icons"><svg class="i"><use href="#i-tiktok"/></svg><svg class="i"><use href="#i-youtube"/></svg></span>
+                <span><b data-ed-count="48200">0</b> <span data-i18n="editor.views">Aufrufe</span></span>
+                <span class="ed-viral__up"><svg class="i"><use href="#i-trend"/></svg></span>
+              </span>
+              <svg class="ed-cursor" viewBox="0 0 24 24"><path d="M5 3l14 8.2-6.2 1.4L9.6 19z"/></svg>
+            </div>
+
+            <ol class="ed-steps" aria-hidden="true">
+              <li data-ed-step="1" data-i18n="editor.s1">Auswählen</li>
+              <li data-ed-step="2" data-i18n="editor.s2">Hochformat</li>
+              <li data-ed-step="3" data-i18n="editor.s3">Felder</li>
+              <li data-ed-step="4" data-i18n="editor.s4">Effekte</li>
+              <li data-ed-step="5">Export</li>
+              <li data-ed-step="6">Upload</li>
+            </ol>
+          </div>
+      </div>
+    </section>
+
+    <!-- ============ LEISTUNGEN ============ -->
+    <section class="sec" id="leistungen">
+      <header class="sec__head" data-reveal>
+        <p class="eyebrow"><span data-i18n="services.eyebrow">Leistungen</span></p>
+        <h2 class="sec__title" data-i18n="services.title">Was ich mache</h2>
+      </header>
+      <div class="grid3">
+        <article class="tile tile--yellow svc-card" data-reveal>
+          <span class="svc-card__i" aria-hidden="true"><svg class="i"><use href="#i-play"/></svg></span>
+          <h3 data-i18n="s1.title">Schachvideos</h3>
+          <p data-i18n="s1.text">Shorts und TikToks aus deinen Stream-Clips. Längere Videos für YouTube auch.</p>
+        </article>
+        <article class="tile tile--pink svc-card" data-reveal>
+          <span class="svc-card__i" aria-hidden="true"><svg class="i"><use href="#i-smile"/></svg></span>
+          <h3 data-i18n="s2.title">Twitch-Grafiken</h3>
+          <p data-i18n="s2.text">Emotes, Sub-Badges, Overlays, Panels und Banner.</p>
+        </article>
+        <article class="tile tile--mint svc-card" data-reveal>
+          <span class="svc-card__i" aria-hidden="true"><svg class="i"><use href="#i-code"/></svg></span>
+          <h3 data-i18n="s3.title">Code</h3>
+          <p data-i18n="s3.text">Websites und Schach-Modi für Streams, zum Beispiel den <a href="#hub">Cagers Game Hub</a>.</p>
+        </article>
+      </div>
+      <p class="also" data-reveal><b data-i18n="more.title">Außerdem:</b> <span data-i18n="more.text">Thumbnails, Clips aus VODs, Untertitel, Titel und Hashtags, Partieanalysen.</span></p>
+    </section>
+
+    <!-- ============ ARBEITEN ============ -->
+    <section class="sec" id="showcase">
+      <header class="sec__head sec__head--split" data-reveal>
+        <div>
+          <p class="eyebrow"><span data-i18n="show.eyebrow">Arbeiten</span></p>
+          <h2 class="sec__title" data-i18n="show.title">Für TheCager</h2>
+          <p class="sec__lead" data-i18n="show.story">Ich arbeite mit TheCager, seit er streamt. Sein Kanal ist seitdem von 0 auf über 1.000 Follower gewachsen, inzwischen ist er Chess.com-Streamer.</p>
+        </div>
+        <a class="client" href="https://www.twitch.tv/thecager" target="_blank" rel="noopener">
+          <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/ce057e49-18fe-40ee-8e1e-23cddbe35571-profile_image-150x150.png" alt="" width="44" height="44" loading="lazy">
+          <span><strong>TheCager</strong><small>twitch.tv/thecager ↗</small></span>
+        </a>
+      </header>
+
+      <!-- TikToks -->
+      <div class="block-head" data-reveal>
+        <h3 class="block-head__title" data-i18n="show.tt.title">TikToks</h3>
+        <div class="consent-note">
+          <p data-i18n="show.tt.note">Die Videos laden erst, wenn du draufklickst. Dabei gehen Daten an TikTok.</p>
+          <button type="button" class="btn btn--sm" data-tt-all data-i18n="show.tt.all">Alle laden</button>
+          <div class="carousel-nav">
+            <button type="button" data-carousel="prev" aria-label="Vorherige Videos" data-i18n-attr="aria-label:carousel.prev"><svg class="i" aria-hidden="true" style="transform:scaleX(-1)"><use href="#i-arrow"/></svg></button>
+            <button type="button" data-carousel="next" aria-label="Nächste Videos" data-i18n-attr="aria-label:carousel.next"><svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          </div>
+        </div>
+      </div>
+        <div class="tiktoks">
+          <article class="tt" data-tiktok="7679826838570503457" data-reveal>
+            <div class="tt__frame">
+              <div class="tt__cover">
+                <span class="tt__rank">#1</span>
+                <svg class="i tt__piece" aria-hidden="true"><use href="#i-queen"/></svg>
+                <p class="tt__views"><strong>64.1K</strong> <span data-i18n="show.tt.views">Aufrufe</span></p>
+                <button type="button" class="tt__play" data-tt-load><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span data-i18n="show.tt.load">Abspielen</span></button>
+              </div>
+            </div>
+            <a class="tt__link" href="https://www.tiktok.com/@the_cager/video/7679826838570503457" target="_blank" rel="noopener" data-i18n="show.tt.open">Auf TikTok öffnen ↗</a>
+          </article>
+          <article class="tt" data-tiktok="7682342027530358049" data-reveal>
+            <div class="tt__frame">
+              <div class="tt__cover">
+                <span class="tt__rank">#2</span>
+                <svg class="i tt__piece" aria-hidden="true"><use href="#i-rook"/></svg>
+                <p class="tt__views"><strong>9.0K</strong> <span data-i18n="show.tt.views">Aufrufe</span></p>
+                <button type="button" class="tt__play" data-tt-load><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span data-i18n="show.tt.load">Abspielen</span></button>
+              </div>
+            </div>
+            <a class="tt__link" href="https://www.tiktok.com/@the_cager/video/7682342027530358049" target="_blank" rel="noopener" data-i18n="show.tt.open">Auf TikTok öffnen ↗</a>
+          </article>
+          <article class="tt" data-tiktok="7680240360848723232" data-reveal>
+            <div class="tt__frame">
+              <div class="tt__cover">
+                <span class="tt__rank">#3</span>
+                <svg class="i tt__piece" aria-hidden="true"><use href="#i-knight"/></svg>
+                <p class="tt__views"><strong>6.6K</strong> <span data-i18n="show.tt.views">Aufrufe</span></p>
+                <button type="button" class="tt__play" data-tt-load><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span data-i18n="show.tt.load">Abspielen</span></button>
+              </div>
+            </div>
+            <a class="tt__link" href="https://www.tiktok.com/@the_cager/video/7680240360848723232" target="_blank" rel="noopener" data-i18n="show.tt.open">Auf TikTok öffnen ↗</a>
+          </article>
+          <article class="tt" data-tiktok="7683046298064375062" data-reveal>
+            <div class="tt__frame">
+              <div class="tt__cover">
+                <span class="tt__rank">#4</span>
+                <svg class="i tt__piece" aria-hidden="true"><use href="#i-king"/></svg>
+                <p class="tt__views"><strong>4.0K</strong> <span data-i18n="show.tt.views">Aufrufe</span></p>
+                <button type="button" class="tt__play" data-tt-load><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span data-i18n="show.tt.load">Abspielen</span></button>
+              </div>
+            </div>
+            <a class="tt__link" href="https://www.tiktok.com/@the_cager/video/7683046298064375062" target="_blank" rel="noopener" data-i18n="show.tt.open">Auf TikTok öffnen ↗</a>
+          </article>
+          <article class="tt" data-tiktok="7677895755738254614" data-reveal>
+            <div class="tt__frame">
+              <div class="tt__cover">
+                <span class="tt__rank">#5</span>
+                <svg class="i tt__piece" aria-hidden="true"><use href="#i-pawn"/></svg>
+                <p class="tt__views"><strong>3.8K</strong> <span data-i18n="show.tt.views">Aufrufe</span></p>
+                <button type="button" class="tt__play" data-tt-load><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span data-i18n="show.tt.load">Abspielen</span></button>
+              </div>
+            </div>
+            <a class="tt__link" href="https://www.tiktok.com/@the_cager/video/7677895755738254614" target="_blank" rel="noopener" data-i18n="show.tt.open">Auf TikTok öffnen ↗</a>
+          </article>
+          <article class="tt" data-tiktok="7680273310671818017" data-reveal>
+            <div class="tt__frame">
+              <div class="tt__cover">
+                <span class="tt__rank">#6</span>
+                <svg class="i tt__piece" aria-hidden="true"><use href="#i-board"/></svg>
+                <p class="tt__views"><strong>2.9K</strong> <span data-i18n="show.tt.views">Aufrufe</span></p>
+                <button type="button" class="tt__play" data-tt-load><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span data-i18n="show.tt.load">Abspielen</span></button>
+              </div>
+            </div>
+            <a class="tt__link" href="https://www.tiktok.com/@the_cager/video/7680273310671818017" target="_blank" rel="noopener" data-i18n="show.tt.open">Auf TikTok öffnen ↗</a>
+          </article>
+        </div>
+
+      <!-- Aufrufe vorher / nachher -->
+      <div class="block-head" data-reveal>
+        <h3 class="block-head__title" data-i18n="show.an.title">Aufrufe</h3>
+        <p class="block-head__meta" data-i18n="show.an.meta">TikTok und YouTube Shorts, Stand 25.10.2026</p>
+      </div>
+      <div class="bento bento--charts">
+        <figure class="tile span-7" data-reveal>
+          <div class="card__head"><h4 data-i18n="show.c1.title">TikTok, insgesamt</h4><span class="card__meta">14.08. – 13.09.2026</span></div>
+          <div class="chart" data-chart="tiktok" role="img" aria-label="Liniendiagramm: Aufrufe auf TikTok" data-i18n-attr="aria-label:show.c1.label"></div>
+          <figcaption class="chart__cap" data-cap="tiktok"></figcaption>
+          <details class="chart__table"><summary data-i18n="show.table">Als Tabelle</summary><div data-table="tiktok"></div></details>
+        </figure>
+        <figure class="tile span-5" data-reveal>
+          <div class="card__head"><h4 data-i18n="show.c2.title">Shorts, pro Video</h4><span class="card__meta" data-i18n="show.c2.meta">älteste links</span></div>
+          <div class="chart" data-chart="shorts" role="img" aria-label="Balkendiagramm: Aufrufe pro Short" data-i18n-attr="aria-label:show.c2.label"></div>
+          <figcaption class="chart__cap" data-cap="shorts"></figcaption>
+          <details class="chart__table"><summary data-i18n="show.table">Als Tabelle</summary><div data-table="shorts"></div></details>
+        </figure>
+      </div>
+
+      <!-- Twitch-Grafiken -->
+      <div class="block-head" data-reveal>
+        <h3 class="block-head__title" data-i18n="show.tw.title">Twitch-Grafiken</h3>
+      </div>
+      <div class="bento bento--show">
+        <div class="tile span-7" data-reveal>
+          <div class="card__head"><h4 data-i18n="show.tw.badges">Sub-Badges</h4></div>
+            <ul class="badges">
+              <li class="badge" data-tilt><img src="https://static-cdn.jtvnw.net/badges/v1/e3253c82-0a2d-4227-95b0-880d1f27297a/3" alt="Sub-Badge 1 Monat" loading="lazy" width="72" height="72"><span data-i18n="b.1">1 Monat</span></li>
+              <li class="badge" data-tilt><img src="https://static-cdn.jtvnw.net/badges/v1/2e0d7d16-6b4b-41fd-85d6-378eb152e38a/3" alt="Sub-Badge 2 Monate" loading="lazy" width="72" height="72"><span data-i18n="b.2">2 Monate</span></li>
+              <li class="badge" data-tilt><img src="https://static-cdn.jtvnw.net/badges/v1/8a9d134f-cd8c-4f5f-8125-7efa9a353117/3" alt="Sub-Badge 3 Monate" loading="lazy" width="72" height="72"><span data-i18n="b.3">3 Monate</span></li>
+              <li class="badge" data-tilt><img src="https://static-cdn.jtvnw.net/badges/v1/8c945fda-70ed-4729-be0c-b2485144324d/3" alt="Sub-Badge 6 Monate" loading="lazy" width="72" height="72"><span data-i18n="b.6">6 Monate</span></li>
+              <li class="badge" data-tilt><img src="https://static-cdn.jtvnw.net/badges/v1/37b46d58-e222-450a-bde6-bd60aed6a2cb/3" alt="Sub-Badge 9 Monate" loading="lazy" width="72" height="72"><span data-i18n="b.9">9 Monate</span></li>
+              <li class="badge" data-tilt><img src="https://static-cdn.jtvnw.net/badges/v1/80fd2271-8d9d-469e-af7d-e6a3e78acd83/3" alt="Sub-Badge 1 Jahr" loading="lazy" width="72" height="72"><span data-i18n="b.12">1 Jahr</span></li>
+              <li class="badge" data-tilt><img src="https://static-cdn.jtvnw.net/badges/v1/69049e20-86a2-4b48-b629-ca0f198a0155/3" alt="Sub-Badge 1,5 Jahre" loading="lazy" width="72" height="72"><span data-i18n="b.18">1,5 Jahre</span></li>
+            </ul>
+        </div>
+        <div class="tile span-5" data-reveal>
+          <div class="card__head"><h4>Emotes</h4></div>
+            <ul class="emotes">
+              <li data-tilt><img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_6eff759ea82740e493c5f063f6237b36/default/dark/3.0" alt="Emote Angryshake" loading="lazy" width="112" height="112"><span>Angryshake</span></li>
+              <li data-tilt><img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_7b73900d45894fe0aa4efc3d680a92f3/default/dark/3.0" alt="Emote Confusedspin" loading="lazy" width="112" height="112"><span>Confusedspin</span></li>
+              <li data-tilt><img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_9ae8988c80224fdbb2d59eaee4c35f18/default/dark/3.0" alt="Emote Brilliant" loading="lazy" width="112" height="112"><span>Brilliant</span></li>
+              <li data-tilt><img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_44c18822bb024ee9af1cf5ad7a2e9d23/default/dark/3.0" alt="Emote Dancin" loading="lazy" width="112" height="112"><span>Dancin</span></li>
+              <li data-tilt><img src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_e0a1b18555e6422c85cb068803347a16/default/dark/3.0" alt="Emote Dancin2" loading="lazy" width="112" height="112"><span>Dancin2</span></li>
+            </ul>
+        </div>
+        <div class="tile span-12" data-reveal>
+          <div class="card__head"><h4 data-i18n="show.tw.panels">Panels</h4></div>
+            <ul class="panels">
+              <li><img src="https://panels.twitch.tv/panel-252079808-image-f118618e-00da-4642-a9dd-ed18608e9dab" alt="Twitch-Panel" loading="lazy" width="320" height="110"></li>
+              <li><img src="https://panels.twitch.tv/panel-252079808-image-0cf02143-c59c-4d23-871a-5cde5b829505" alt="Twitch-Panel" loading="lazy" width="320" height="110"></li>
+              <li><img src="https://panels.twitch.tv/panel-252079808-image-94fc9fd3-ad82-4f58-89c8-f7dfce3114fe" alt="Twitch-Panel" loading="lazy" width="320" height="110"></li>
+              <li><img src="https://panels.twitch.tv/panel-252079808-image-78e6d95f-8f36-4474-814e-8ecf565e9083" alt="Twitch-Panel" loading="lazy" width="320" height="110"></li>
+              <li><img src="https://panels.twitch.tv/panel-252079808-image-4ed4d6d2-47b2-42ff-857f-8c2f71c05f62" alt="Twitch-Panel" loading="lazy" width="320" height="110"></li>
+              <li><img src="https://panels.twitch.tv/panel-252079808-image-cbbe17ea-2d53-447f-a0cd-f7720d25b317" alt="Twitch-Panel" loading="lazy" width="320" height="110"></li>
+              <li><img src="https://panels.twitch.tv/panel-252079808-image-ea22b360-21ff-4e27-81be-1762289ac742" alt="Twitch-Panel" loading="lazy" width="320" height="124"></li>
+            </ul>
+        </div>
+      </div>
+
+      <!-- Cagers Game Hub -->
+      <div class="block-head" id="hub" data-reveal>
+        <h3 class="block-head__title">Cagers Game Hub</h3>
+        <a class="btn btn--sm" href="https://cagers-quick-chess.onrender.com" target="_blank" rel="noopener"><span data-i18n="show.hub.open">Live ansehen</span> ↗</a>
+      </div>
+      <div class="hub" data-hub>
+          <figure class="hub__frame" data-reveal>
+            <div class="hub__bar">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="hub__url"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg><span data-hub-url>cagers-quick-chess.onrender.com/</span></span>
+            </div>
+            <div class="hub__screen">
+              <img src="assets/hub/hub.png" alt="Screenshot: Cagers Game Hub" data-hub-img width="1440" height="900" loading="lazy">
+            </div>
+            <div class="hub__progress" aria-hidden="true"><span data-hub-progress></span></div>
+          </figure>
+        <div class="hub__side" data-reveal>
+          <p class="hub__text" data-i18n="show.hub.text">Eine Spieleseite für TheCagers Community, mit Twitch-Login, Chat und eigenen Schach-Modi.</p>
+          <ul class="hub__modes">
+            <li><button type="button" class="hub__mode" data-shot="hub" data-path="/" aria-pressed="true" style="--c:var(--mint)"><span class="hub__mode-i"><svg class="i" aria-hidden="true"><use href="#i-board"/></svg></span><span><b data-i18n="show.hub.m0">Startseite</b><small data-i18n="show.hub.m0t">Login, Chat, Bestenliste</small></span></button></li>
+            <li><button type="button" class="hub__mode" data-shot="quick-chess" data-path="/chess" aria-pressed="false" style="--c:var(--yellow)"><span class="hub__mode-i"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span><span><b>Quick Chess</b><small data-i18n="show.hub.m1t">Echtzeit mit Cooldowns</small></span></button></li>
+            <li><button type="button" class="hub__mode" data-shot="mutant-merge" data-path="/mutant-chess" aria-pressed="false" style="--c:var(--lilac)"><span class="hub__mode-i"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg></span><span><b>Mutant Merge</b><small data-i18n="show.hub.m2t">Figuren verschmelzen</small></span></button></li>
+            <li><button type="button" class="hub__mode" data-shot="cager-bot" data-path="/play-cager" aria-pressed="false" style="--c:var(--sky)"><span class="hub__mode-i"><svg class="i" aria-hidden="true"><use href="#i-king"/></svg></span><span><b>VS Cager Bot</b><small data-i18n="show.hub.m3t">Bot im Stil von TheCager</small></span></button></li>
+            <li><button type="button" class="hub__mode" data-shot="prediction" data-path="/prediction-chess" aria-pressed="false" style="--c:var(--pink)"><span class="hub__mode-i"><svg class="i" aria-hidden="true"><use href="#i-eye"/></svg></span><span><b>Prediction Chess</b><small data-i18n="show.hub.m4t">Züge vorhersagen</small></span></button></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAKETE ============ -->
+    <!-- data-id muss eindeutig sein und zu src/catalog.js passen -->
+    <section class="sec" id="pakete">
+      <header class="sec__head" data-reveal>
+        <p class="eyebrow"><span data-i18n="price.eyebrow">Pakete</span></p>
+        <h2 class="sec__title" data-i18n="price.title">Was brauchst du?</h2>
+        <p class="sec__lead" data-i18n="price.lead">Klick an, was dich interessiert, deine Auswahl landet unten im Formular. Den Preis machen wir danach aus, auch für kleine Kanäle.</p>
+      </header>
+
+      <div class="filters" role="group" aria-label="Pakete filtern" data-i18n-attr="aria-label:price.filter" data-reveal>
+        <button type="button" class="filter" data-filter="all" aria-pressed="true"><span data-i18n="cat.all">Alle</span></button>
+        <button type="button" class="filter" data-filter="video" aria-pressed="false"><span data-i18n="cat.video">Video</span></button>
+        <button type="button" class="filter" data-filter="stream" aria-pressed="false"><span data-i18n="cat.stream">Twitch</span></button>
+        <button type="button" class="filter" data-filter="code" aria-pressed="false"><span data-i18n="cat.code">Code</span></button>
+        <button type="button" class="filter" data-filter="extra" aria-pressed="false"><span data-i18n="cat.extra">Extras</span></button>
+      </div>
+
+      <div class="pkgs" data-pkgs>
+        <article class="pkg" data-cat="video" data-id="short" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-knight"/></svg></span><h3 class="pkg__name" data-i18n="k1.name">Schach-Short</h3><p class="pkg__desc" data-i18n="k1.desc">Short oder TikTok, bis 60 Sekunden</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="video" data-id="youtube" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-youtube"/></svg></span><h3 class="pkg__name" data-i18n="k2.name">YouTube-Video</h3><p class="pkg__desc" data-i18n="k2.desc">Längeres Video mit Thumbnail</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="stream" data-id="emotes" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-smile"/></svg></span><h3 class="pkg__name">Emotes</h3><p class="pkg__desc" data-i18n="k3.desc">Statisch oder animiert</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="stream" data-id="badges" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-badge"/></svg></span><h3 class="pkg__name" data-i18n="k4.name">Sub-Badges</h3><p class="pkg__desc" data-i18n="k4.desc">Für alle Abo-Stufen</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="stream" data-id="overlay" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg></span><h3 class="pkg__name" data-i18n="k5.name">Stream-Overlay</h3><p class="pkg__desc" data-i18n="k5.desc">Facecam-Rahmen, Alerts, Szenen</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="stream" data-id="panels" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-panel"/></svg></span><h3 class="pkg__name" data-i18n="k6.name">Panels &amp; Banner</h3><p class="pkg__desc" data-i18n="k6.desc">Für deine Kanalseite</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="code" data-id="website" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg></span><h3 class="pkg__name" data-i18n="k12.name">Custom Website</h3><p class="pkg__desc" data-i18n="k12.desc">Portfolio, Link-Seite oder mehr</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="code" data-id="chessmode" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-knight"/></svg></span><h3 class="pkg__name" data-i18n="k13.name">Schach-Modus</h3><p class="pkg__desc" data-i18n="k13.desc">Eigene Regeln, spielbar im Browser</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="code" data-id="tools" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-tool"/></svg></span><h3 class="pkg__name" data-i18n="k14.name">Stream-Tools</h3><p class="pkg__desc" data-i18n="k14.desc">Chat-Befehle, Overlays mit Live-Daten</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="extra" data-id="thumbnail" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-image"/></svg></span><h3 class="pkg__name">Thumbnails</h3><p class="pkg__desc" data-i18n="k7.desc">Für YouTube, 1920 × 1080</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="extra" data-id="clips" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-scissors"/></svg></span><h3 class="pkg__name" data-i18n="k8.name">Clips aus Streams</h3><p class="pkg__desc" data-i18n="k8.desc">Kurze Clips aus deinen VODs</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="extra" data-id="subtitles" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-cc"/></svg></span><h3 class="pkg__name" data-i18n="k9.name">Untertitel</h3><p class="pkg__desc" data-i18n="k9.desc">Deutsch oder Englisch</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="extra" data-id="seo" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-hash"/></svg></span><h3 class="pkg__name" data-i18n="k10.name">Titel &amp; Hashtags</h3><p class="pkg__desc" data-i18n="k10.desc">Für YouTube, TikTok und Twitch</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+        <article class="pkg" data-cat="extra" data-id="script" data-reveal><span class="pkg__icon"><svg class="i" aria-hidden="true"><use href="#i-script"/></svg></span><h3 class="pkg__name" data-i18n="k11.name">Partieanalyse</h3><p class="pkg__desc" data-i18n="k11.desc">Die spannenden Stellen deiner Partie, auf Wunsch mit Skript</p><button type="button" class="pkg__pick" aria-pressed="false"><svg class="i pkg__plus" aria-hidden="true"><use href="#i-plus"/></svg><svg class="i pkg__check" aria-hidden="true"><use href="#i-check"/></svg><span class="pkg__off" data-i18n="pick.add">Auswählen</span><span class="pkg__on" data-i18n="pick.added">Ausgewählt</span></button></article>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="sec" id="faq">
+      <header class="sec__head" data-reveal>
+        <p class="eyebrow"><span data-i18n="faq.eyebrow">FAQ</span></p>
+        <h2 class="sec__title" data-i18n="faq.title">Häufige Fragen</h2>
+      </header>
+      <div class="faq">
+        <details class="faq__item" data-reveal><summary data-i18n="faq.q1">Was kostet das?</summary><p data-i18n="faq.a1">Kommt drauf an. Du sagst mir, was du brauchst, und bekommst vorher einen festen Preis.</p></details>
+        <details class="faq__item" data-reveal><summary data-i18n="faq.q2">Wie lange dauert es?</summary><p data-i18n="faq.a2">Ein Short meistens 1 bis 3 Tage, Emotes und Badges ungefähr eine Woche.</p></details>
+        <details class="faq__item" data-reveal><summary data-i18n="faq.q3">Wie bekomme ich ein Kundenkonto?</summary><p data-i18n="faq.a3">Schreib mir. Nach einem kurzen Gespräch schicke ich dir die Zugangsdaten. Im Portal schickst du dann Anfragen und siehst, wie weit ich bin.</p></details>
+        <details class="faq__item" data-reveal><summary data-i18n="faq.q4">Geht das auch auf Englisch?</summary><p data-i18n="faq.a4">Ja, Deutsch und Englisch.</p></details>
+      </div>
+    </section>
+
+    <!-- ============ KONTAKT ============ -->
+    <section class="sec" id="kontakt">
+      <div class="tile tile--yellow contact">
+        <div class="contact__intro" data-reveal>
+          <p class="eyebrow"><span data-i18n="contact.eyebrow">Kontakt</span></p>
+          <h2 class="sec__title" data-i18n="contact.title">Schreib mir</h2>
+          <p class="contact__line"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg><span>Discord: <b data-discord-handle>@derpole_</b></span></p>
+          <a class="contact__line contact__login" href="/login"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg><span data-i18n="contact.login">Schon Kunde? Zum Login</span></a>
+        </div>
+          <form class="form" data-form novalidate data-reveal>
+            <div class="form__row">
+              <label class="field">
+                <span class="field__label" data-i18n="f.name">Name / Kanal</span>
+                <input type="text" name="name" autocomplete="name" required data-i18n-attr="placeholder:f.namePh" placeholder="z. B. TheCager">
+                <span class="field__error" data-i18n="f.err.required">Fehlt noch.</span>
+              </label>
+              <label class="field">
+                <span class="field__label" data-i18n="f.email">E-Mail</span>
+                <input type="email" name="email" autocomplete="email" required placeholder="name@example.com">
+                <span class="field__error" data-i18n="f.err.email">Die E-Mail stimmt so nicht.</span>
+              </label>
+            </div>
+
+            <!-- Wird von main.js aus den Paketen oben gefüllt und mit der Auswahl dort synchron gehalten -->
+            <fieldset class="field field--chips">
+              <legend class="field__label" data-i18n="f.service">Was brauchst du? (mehrere gehen)</legend>
+              <div class="choice" data-choice></div>
+              <span class="field__error" data-i18n="f.err.choice">Such dir mindestens eins aus.</span>
+            </fieldset>
+
+            <div class="form__row">
+              <label class="field">
+                <span class="field__label" data-i18n="f.budget">Budget (grob, optional)</span>
+                <select name="budget">
+                  <option value="" data-i18n="f.b0">Weiß ich noch nicht</option>
+                  <option value="<100">&lt; 100 €</option>
+                  <option value="100-300">100 – 300 €</option>
+                  <option value="300-600">300 – 600 €</option>
+                  <option value="600+">600 € +</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field__label" data-i18n="f.deadline">Bis wann?</span>
+                <input type="date" name="deadline">
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="field__label" data-i18n="f.message">Nachricht</span>
+              <textarea name="message" rows="5" required data-i18n-attr="placeholder:f.messagePh" placeholder="Was brauchst du? Ein Link zu deinem Kanal hilft mir."></textarea>
+              <span class="field__error" data-i18n="f.err.required">Fehlt noch.</span>
+            </label>
+
+            <label class="check">
+              <input type="checkbox" name="privacy" required>
+              <span data-i18n="f.privacy">Ich hab die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen und bin einverstanden, dass meine Angaben für die Anfrage gespeichert werden.</span>
+            </label>
+
+            <div class="form__foot">
+              <button type="submit" class="btn btn--accent btn--lg" data-magnetic>
+                <span data-i18n="f.submit">Abschicken</span>
+                <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </button>
+              <p class="form__status" role="status" aria-live="polite" data-form-status></p>
+            </div>
+          </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Auswahl-Leiste: erscheint, sobald Pakete ausgewählt sind -->
+  <div class="pickbar" data-pickbar hidden>
+    <span class="pickbar__count"><b data-pick-count>0</b> <span data-i18n="pick.bar">ausgewählt</span></span>
+    <a href="#kontakt" class="btn btn--accent btn--sm"><span data-i18n="pick.go">Weiter</span><svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+  </div>
+
+  <footer class="footer wrap">
+    <a href="#top" class="logo"><span class="logo__mark" aria-hidden="true"><svg class="i"><use href="#i-knight"/></svg></span><span class="logo__text">DerPole</span></a>
+    <nav class="footer__links" aria-label="Rechtliches">
+      <a href="impressum.html" data-i18n="footer.imprint">Impressum</a>
+      <a href="datenschutz.html" data-i18n="footer.privacy">Datenschutz</a>
+      <a href="/login" data-i18n="nav.login">Login</a>
+    </nav>
+    <p class="footer__copy">© <span data-year>2026</span> DerPole</p>
+  </footer>
+</body>
+</html>

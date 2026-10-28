@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · DerPole</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#fffaf0">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400..600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="arcade.css">
+  <link rel="stylesheet" href="app.css">
+  <script defer src="app.js"></script>
+  <script defer src="admin.js"></script>
+</head>
+<body class="arcade app app--admin">
+  <header class="app-nav">
+    <div class="container app-nav__inner">
+      <a href="/" class="logo"><span class="logo__mark" aria-hidden="true"><svg class="i"><use href="/icons.svg#i-knight"/></svg></span><span class="logo__text">DerPole</span></a>
+      <span class="app-nav__tag">Admin</span>
+      <nav class="tabs" role="tablist" aria-label="Bereiche">
+        <button type="button" role="tab" class="tab" data-tab="home" aria-selected="true"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-king"/></svg>Übersicht</button>
+        <button type="button" role="tab" class="tab" data-tab="orders" aria-selected="false"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-box"/></svg>Aufträge<span class="tab__count" data-orders-count hidden></span></button>
+        <button type="button" role="tab" class="tab" data-tab="contacts" aria-selected="false"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-message"/></svg>Website-Anfragen<span class="tab__count" data-contacts-count hidden></span></button>
+        <button type="button" role="tab" class="tab" data-tab="users" aria-selected="false"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-users"/></svg>Kunden</button>
+        <button type="button" role="tab" class="tab" data-tab="prices" aria-selected="false"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-hash"/></svg>Preise</button>
+      </nav>
+      <div class="app-nav__actions">
+        <button type="button" class="btn btn--ghost btn--sm" data-account-open><svg class="i" aria-hidden="true"><use href="/icons.svg#i-users"/></svg><span data-me>Konto</span></button>
+        <button type="button" class="btn btn--ghost btn--sm" data-logout>Abmelden</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container app-main">
+    <!-- Übersicht -->
+    <section class="app-section" data-panel="home">
+      <header class="app-head">
+        <p class="eyebrow"><span>Übersicht</span></p>
+        <h1 class="app-title">Was steht an?</h1>
+      </header>
+      <dl class="kpis admin-kpis" data-stats></dl>
+      <div class="dash">
+        <section class="card dash__box">
+          <h2 class="dash__title"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-clock"/></svg>Als Nächstes</h2>
+          <p class="dash__hint">Offene Aufträge, früheste Deadline zuerst</p>
+          <div class="dash__list" data-next></div>
+        </section>
+        <section class="card dash__box">
+          <h2 class="dash__title"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-chat"/></svg>Neueste Kundennachrichten</h2>
+          <p class="dash__hint">Klick öffnet den Auftrag</p>
+          <div class="dash__list" data-recent></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- Aufträge -->
+    <section class="app-section" data-panel="orders" hidden>
+      <header class="app-head app-head--row">
+        <div>
+          <p class="eyebrow"><span>Aufträge</span></p>
+          <h1 class="app-title">Aufträge</h1>
+        </div>
+        <div class="toolbar">
+          <label class="search"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-eye"/></svg><input type="search" placeholder="Kunde oder #Nummer" data-order-search aria-label="Aufträge suchen"></label>
+          <select data-order-filter aria-label="Status">
+            <option value="open">Offen</option>
+            <option value="new">Neu</option>
+            <option value="progress">In Arbeit</option>
+            <option value="review">Zur Abnahme</option>
+            <option value="done">Fertig</option>
+            <option value="cancelled">Abgebrochen</option>
+            <option value="all">Alle</option>
+          </select>
+        </div>
+      </header>
+      <p class="chip-filter" data-user-filter hidden></p>
+      <div class="orders" data-orders></div>
+    </section>
+
+    <!-- Website-Anfragen -->
+    <section class="app-section" data-panel="contacts" hidden>
+      <header class="app-head app-head--row">
+        <div>
+          <p class="eyebrow"><span>Kontaktformular</span></p>
+          <h1 class="app-title">Website-Anfragen</h1>
+        </div>
+        <select data-contact-filter aria-label="Anzeigen">
+          <option value="open">Offen</option>
+          <option value="done">Erledigt</option>
+          <option value="all">Alle</option>
+        </select>
+      </header>
+      <div class="orders" data-contacts></div>
+    </section>
+
+    <!-- Kunden -->
+    <section class="app-section" data-panel="users" hidden>
+      <header class="app-head app-head--row">
+        <div>
+          <p class="eyebrow"><span>Konten</span></p>
+          <h1 class="app-title">Kunden</h1>
+        </div>
+        <div class="toolbar">
+          <label class="search"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-eye"/></svg><input type="search" placeholder="Name suchen" data-user-search aria-label="Kunden suchen"></label>
+          <button type="button" class="btn btn--accent btn--sm" data-user-new><svg class="i" aria-hidden="true"><use href="/icons.svg#i-plus"/></svg>Neues Konto</button>
+        </div>
+      </header>
+      <div class="table-wrap card">
+        <table class="table">
+          <thead><tr><th>Name</th><th>Benutzername</th><th>Discord</th><th>Offen</th><th>Gesamt</th><th>Status</th><th></th></tr></thead>
+          <tbody data-users></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Preise -->
+    <section class="app-section" data-panel="prices" hidden>
+      <header class="app-head">
+        <p class="eyebrow"><span>Preise</span></p>
+        <h1 class="app-title">Standardpreise</h1>
+        <p class="app-lead">Gelten für alle Konten, bei denen du keinen eigenen Preis setzt. Leer lassen = Preis nach Absprache. Eigene Preise pro Kunde setzt du unter „Kunden“.</p>
+      </header>
+      <form class="card prices-form" data-default-prices>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Dienst</th><th>Einheit</th><th>Preis (€)</th></tr></thead>
+            <tbody data-default-rows></tbody>
+          </table>
+        </div>
+        <div class="form__foot">
+          <button type="submit" class="btn btn--accent btn--sm">Speichern</button>
+          <p class="form__status" role="status" aria-live="polite" data-default-status></p>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Auftrag im Detail -->
+  <dialog class="modal modal--wide" data-order-dialog>
+    <div class="modal__body" data-order-body></div>
+  </dialog>
+
+  <!-- Konto anlegen / bearbeiten -->
+  <dialog class="modal modal--wide" data-user-dialog>
+    <form class="modal__body" data-user-form novalidate>
+      <header class="detail__head">
+        <h2 data-user-title>Neues Konto</h2>
+        <button type="button" class="icon-btn" data-user-close aria-label="Schließen"><svg class="i"><use href="/icons.svg#i-x"/></svg></button>
+      </header>
+      <div class="form__row">
+        <label class="field">
+          <span class="field__label">Benutzername (zum Einloggen)</span>
+          <input name="username" maxlength="32" autocomplete="off" autocapitalize="off" spellcheck="false" pattern="[a-zA-Z0-9_.\-]{3,32}">
+        </label>
+        <label class="field">
+          <span class="field__label">Anzeigename</span>
+          <input name="display_name" maxlength="60" required>
+        </label>
+      </div>
+      <div class="form__row">
+        <label class="field">
+          <span class="field__label">Discord</span>
+          <input name="discord" maxlength="60" placeholder="z. B. thecager">
+        </label>
+        <label class="field field--check" data-active-wrap>
+          <span class="field__label">Konto aktiv</span>
+          <span class="switch"><input type="checkbox" name="active" checked><span></span></span>
+        </label>
+      </div>
+      <label class="field">
+        <span class="field__label">Notizen (nur für dich)</span>
+        <textarea name="notes" rows="2" maxlength="2000"></textarea>
+      </label>
+
+      <div class="field">
+        <span class="field__label">Preise für dieses Konto · leer = Standardpreis</span>
+        <div class="table-wrap">
+          <table class="table table--compact">
+            <thead><tr><th>Dienst</th><th>Standard</th><th>Eigener Preis (€)</th><th>Ausblenden</th></tr></thead>
+            <tbody data-user-prices></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="creds" data-creds hidden></div>
+      <p class="form__status" role="status" aria-live="polite" data-user-status></p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost btn--sm" data-user-orders hidden>Aufträge ansehen</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-user-reset hidden>Passwort zurücksetzen</button>
+        <button type="button" class="btn btn--ghost btn--sm btn--danger" data-user-delete hidden>Konto löschen</button>
+        <span class="spacer"></span>
+        <button type="submit" class="btn btn--accent btn--sm" data-user-save>Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Eigenes Konto -->
+  <dialog class="modal" data-account>
+    <form class="modal__body" method="dialog" data-pw-form novalidate>
+      <h2>Dein Admin-Konto</h2>
+      <dl class="kv" data-account-info></dl>
+      <h3 class="modal__sub">Passwort ändern</h3>
+      <label class="field"><span class="field__label">Aktuelles Passwort</span><input type="password" name="current" autocomplete="current-password" required maxlength="200"></label>
+      <label class="field"><span class="field__label">Neues Passwort (mindestens 10 Zeichen)</span><input type="password" name="next" autocomplete="new-password" required minlength="10" maxlength="200"></label>
+      <label class="field"><span class="field__label">Neues Passwort wiederholen</span><input type="password" name="repeat" autocomplete="new-password" required maxlength="200"></label>
+      <p class="form__status" role="status" aria-live="polite" data-pw-status></p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost btn--sm" data-account-close>Schließen</button>
+        <button type="submit" class="btn btn--accent btn--sm">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

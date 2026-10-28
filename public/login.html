@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login · DerPole</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#fffaf0">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400..600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="arcade.css">
+  <link rel="stylesheet" href="app.css">
+  <script defer src="app.js"></script>
+  <script defer src="login.js"></script>
+</head>
+<body class="arcade auth">
+  <main class="auth__wrap">
+    <a href="/" class="logo auth__logo"><span class="logo__mark" aria-hidden="true"><svg class="i"><use href="/icons.svg#i-knight"/></svg></span><span class="logo__text">DerPole</span></a>
+
+    <form class="auth__card" data-login novalidate>
+      <div class="auth__head">
+        <h1 data-t="title">Client login</h1>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" class="lang__btn" data-lang="de" aria-pressed="false">DE</button>
+          <button type="button" class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+        </div>
+      </div>
+      <p class="auth__lead" data-t="lead">You get your login from me after we've talked.</p>
+
+      <label class="field">
+        <span class="field__label" data-t="user">Username</span>
+        <input name="username" autocomplete="username" required maxlength="64" autocapitalize="off" spellcheck="false">
+      </label>
+      <label class="field">
+        <span class="field__label" data-t="pass">Password</span>
+        <input name="password" type="password" autocomplete="current-password" required maxlength="200">
+      </label>
+
+      <button class="btn btn--accent btn--lg auth__submit" type="submit"><span data-t="submit">Log in</span><svg class="i" aria-hidden="true"><use href="/icons.svg#i-arrow"/></svg></button>
+      <p class="form__status" role="status" aria-live="polite" data-status></p>
+      <p class="auth__foot"><span data-t="noacc">No account yet?</span> <a href="/#kontakt" data-t="contact">Get in touch</a></p>
+    </form>
+  </main>
+</body>
+</html>

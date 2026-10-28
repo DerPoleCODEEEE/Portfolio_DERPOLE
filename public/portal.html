@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal · DerPole</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#fffaf0">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400..600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="arcade.css">
+  <link rel="stylesheet" href="app.css">
+  <script defer src="app.js"></script>
+  <script defer src="portal.js"></script>
+</head>
+<body class="arcade app">
+  <header class="app-nav">
+    <div class="container app-nav__inner">
+      <a href="/" class="logo"><span class="logo__mark" aria-hidden="true"><svg class="i"><use href="/icons.svg#i-knight"/></svg></span><span class="logo__text">DerPole</span></a>
+      <nav class="tabs" role="tablist" aria-label="Portal">
+        <button type="button" role="tab" class="tab" data-tab="new" aria-selected="false"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-plus"/></svg><span data-t="tabNew">New request</span></button>
+        <button type="button" role="tab" class="tab" data-tab="orders" aria-selected="false"><svg class="i" aria-hidden="true"><use href="/icons.svg#i-board"/></svg><span data-t="tabOrders">My requests</span><span class="tab__count" data-unread hidden></span></button>
+      </nav>
+      <div class="app-nav__actions">
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" class="lang__btn" data-lang="de" aria-pressed="false">DE</button>
+          <button type="button" class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+        </div>
+        <button type="button" class="btn btn--ghost btn--sm" data-account-open><svg class="i" aria-hidden="true"><use href="/icons.svg#i-users"/></svg><span data-me>…</span></button>
+        <button type="button" class="btn btn--ghost btn--sm" data-logout><span data-t="logout">Log out</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container app-main">
+    <!-- Neue Anfrage -->
+    <section class="app-section" data-panel="new" hidden>
+      <header class="app-head">
+        <p class="eyebrow"><span data-t="newEyebrow">New request</span></p>
+        <h1 class="app-title" data-t="newTitle">What do you need?</h1>
+        <p class="app-lead" data-t="newLead">Pick services, set quantities and add notes or files to each one. I'll get back to you right in your request.</p>
+      </header>
+
+      <ol class="steps-mini" aria-label="How it works">
+        <li><span class="steps-mini__n">1</span><span data-t="step1">Pick services</span></li>
+        <li><span class="steps-mini__n">2</span><span data-t="step2">Add details &amp; files</span></li>
+        <li><span class="steps-mini__n">3</span><span data-t="step3">Send, then follow it under “My requests”</span></li>
+      </ol>
+
+      <div class="order">
+        <div class="order__main">
+          <div class="filters" data-filters></div>
+          <div class="svc-list" data-services></div>
+        </div>
+
+        <aside class="order__side card">
+          <h2 class="order__title" data-t="summary">Your request</h2>
+          <ul class="sum" data-summary></ul>
+          <p class="sum__empty" data-sum-empty data-t="empty">Nothing selected yet.</p>
+          <div class="sum__total"><span data-t="total">Total</span><b data-total>–</b></div>
+          <p class="sum__hint" data-hint></p>
+
+          <label class="field">
+            <span class="field__label" data-t="deadline">By when?</span>
+            <input type="date" data-deadline>
+          </label>
+          <label class="field">
+            <span class="field__label" data-t="links">Links (VODs, clips, references)</span>
+            <textarea rows="2" maxlength="2000" data-links></textarea>
+          </label>
+          <label class="field">
+            <span class="field__label" data-t="message">Message</span>
+            <textarea rows="4" maxlength="5000" data-message data-t-ph="messagePh"></textarea>
+          </label>
+          <div class="field">
+            <span class="field__label" data-t="general">General files</span>
+            <label class="drop">
+              <input type="file" multiple data-file="general">
+              <svg class="i" aria-hidden="true"><use href="/icons.svg#i-plus"/></svg><span data-t="addFiles">Add files</span>
+            </label>
+            <ul class="files" data-files="general"></ul>
+          </div>
+
+          <button type="button" class="btn btn--accent btn--lg order__send" data-submit>
+            <span data-t="send">Send request</span><svg class="i" aria-hidden="true"><use href="/icons.svg#i-arrow"/></svg>
+          </button>
+          <p class="form__status" role="status" aria-live="polite" data-status></p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Meine Anfragen -->
+    <section class="app-section" data-panel="orders" hidden>
+      <header class="app-head app-head--row">
+        <div>
+          <p class="eyebrow"><span data-t="myEyebrow">Tracking</span></p>
+          <h1 class="app-title" data-t="myTitle">My requests</h1>
+        </div>
+        <button type="button" class="btn btn--accent btn--sm" data-goto-new><svg class="i" aria-hidden="true"><use href="/icons.svg#i-plus"/></svg><span data-t="tabNew">New request</span></button>
+      </header>
+      <div class="orders" data-orders></div>
+    </section>
+  </main>
+
+  <!-- Auftrag im Detail -->
+  <dialog class="modal modal--wide" data-order-dialog>
+    <div class="modal__body" data-order-body></div>
+  </dialog>
+
+  <!-- Konto -->
+  <dialog class="modal" data-account>
+    <form class="modal__body" method="dialog" data-pw-form novalidate>
+      <h2 data-t="account">Your account</h2>
+      <dl class="kv" data-account-info></dl>
+      <h3 class="modal__sub" data-t="pwTitle">Change password</h3>
+      <label class="field"><span class="field__label" data-t="pwCurrent">Current password</span><input type="password" name="current" autocomplete="current-password" required maxlength="200"></label>
+      <label class="field"><span class="field__label" data-t="pwNew">New password (at least 10 characters)</span><input type="password" name="next" autocomplete="new-password" required minlength="10" maxlength="200"></label>
+      <label class="field"><span class="field__label" data-t="pwRepeat">Repeat new password</span><input type="password" name="repeat" autocomplete="new-password" required maxlength="200"></label>
+      <p class="form__status" role="status" aria-live="polite" data-pw-status></p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost btn--sm" data-account-close data-t="close">Close</button>
+        <button type="submit" class="btn btn--accent btn--sm" data-t="save">Save</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
